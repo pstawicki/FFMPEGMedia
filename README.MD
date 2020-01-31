@@ -9,6 +9,8 @@ A plugin that let's you use the FFMPEG library as media player
    - Support for hardware accelerated codecs
    - Support for videos with alpha   
 
+# Fixed dependencies and Windows C4458 error for UE 4.24.2
+
 ## How to use
 
 1. The plugin was tested on Unreal 4.19.2
