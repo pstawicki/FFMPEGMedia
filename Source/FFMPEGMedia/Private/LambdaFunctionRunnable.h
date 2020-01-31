@@ -1,8 +1,8 @@
 #pragma once
 
-#include <RunnableThread.h>
+#include <Hal/RunnableThread.h>
 #include <functional>
-#include <Runnable.h>
+#include <Hal/Runnable.h>
 
 class LambdaFunctionRunnable : public FRunnable {
 public:

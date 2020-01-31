@@ -18,7 +18,7 @@ public:
     FFMPEGDecoder();
     ~FFMPEGDecoder();
 
-    void Init(AVCodecContext *avctx, FFMPEGPacketQueue *queue, CondWait *empty_queue_cond);
+    void Init(AVCodecContext *, FFMPEGPacketQueue *, CondWait *);
     int DecodeFrame( AVFrame *frame, AVSubtitle *sub);
     void SetDecoderReorderPts ( int pts );
     void Abort(FFMPEGFrameQueue* fq);
@@ -29,8 +29,8 @@ public:
     int GetPktSerial();
     int GetFinished();
     
-    void SetTime ( int64_t start_pts, AVRational  start_pts_tb);
-    void SetFinished ( int finished );
+    void SetTime ( int64_t , AVRational  );
+    void SetFinished ( int  );
 
 private:
     int decoder_reorder_pts;

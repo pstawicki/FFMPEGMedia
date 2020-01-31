@@ -21,7 +21,7 @@ public:
     FFMPEGFrameQueue();
     ~FFMPEGFrameQueue();
 
-    int Init( FFMPEGPacketQueue *pktq, int max_size, int keep_last);
+    int Init( FFMPEGPacketQueue *, int , int );
     void Destroy();
     void Signal();
 

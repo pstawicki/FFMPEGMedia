@@ -1362,18 +1362,18 @@ TArray<const AVCodec*>  FFFMPEGMediaTracks::FindDecoders(int codecId, bool hwacc
 
         tmp.Insert(candidates, tmp.Num()); 
        
-        for (const AVCodec* codec : tmp) {
-            if (isHwAccel(codec)) {
-                codecs.Add(codec);
+        for (const AVCodec* t_codec : tmp) {
+            if (isHwAccel(t_codec)) {
+                codecs.Add(t_codec);
             }
         }
     }
 
     if (candidates.Num() > 0) {
         if (!hwaccell) {
-            for (const AVCodec* codec : candidates) {
-                if (!isHwAccel(codec)) {
-                    codecs.Add(codec);
+            for (const AVCodec* t_codec : candidates) {
+                if (!isHwAccel(t_codec)) {
+                    codecs.Add(t_codec);
                 }
             }
         }
@@ -1880,7 +1880,7 @@ int FFFMPEGMediaTracks::UploadTexture(FFMPEGFrame* vp, AVFrame *frame, struct Sw
     FIntPoint Dim = {frame->width, frame->height};
 
     FTimespan Time = FTimespan::FromSeconds(vp->GetPts());
-    FTimespan Duration = FTimespan::FromSeconds(vp->GetDuration());
+    FTimespan t_Duration = FTimespan::FromSeconds(vp->GetDuration());
 
     if (TextureSample->Initialize(
         dataBuffer.GetData(),
@@ -1888,7 +1888,7 @@ int FFFMPEGMediaTracks::UploadTexture(FFMPEGFrame* vp, AVFrame *frame, struct Sw
         Dim,
         pitch[0],
         Time,
-        Duration))
+        t_Duration))
     {
         VideoSampleQueue.Enqueue(TextureSample);
     }
@@ -1917,7 +1917,7 @@ void FFFMPEGMediaTracks::VideoDisplay () {
                             }
                             
                             FTimespan Time = FTimespan::FromSeconds(sp->GetPts());
-                            FTimespan Duration = FTimespan::FromSeconds(sp->GetDuration());
+                            FTimespan t_Duration = FTimespan::FromSeconds(sp->GetDuration());
 
                             for (i = 0; i < (int)sp->GetSub().num_rects; i++) {
                                 AVSubtitleRect *sub_rect = sp->GetSub().rects[i];
@@ -1931,7 +1931,7 @@ void FFFMPEGMediaTracks::VideoDisplay () {
 
                                     const auto CaptionSample = MakeShared<FFFMPEGMediaOverlaySample, ESPMode::ThreadSafe>();
 
-                                    if (CaptionSample->Initialize(sub_rect->type == SUBTITLE_TEXT?sub_rect->text:sub_rect->ass, FVector2D(sub_rect->x, sub_rect->y), Time, Duration))
+                                    if (CaptionSample->Initialize(sub_rect->type == SUBTITLE_TEXT?sub_rect->text:sub_rect->ass, FVector2D(sub_rect->x, sub_rect->y), Time, t_Duration))
                                     {
                                         CaptionSampleQueue.Enqueue(CaptionSample);
                                     }
@@ -2259,7 +2259,7 @@ int FFFMPEGMediaTracks::SynchronizeAudio( int nb_samples) {
         return wanted_nb_samples;
 }
 
-int FFFMPEGMediaTracks::AudioDecodeFrame(FTimespan& Time, FTimespan& Duration) {
+int FFFMPEGMediaTracks::AudioDecodeFrame(FTimespan& Time, FTimespan& t_Duration) {
     int data_size, resampled_data_size;
     int64_t dec_channel_layout;
     av_unused double audio_clock0;
@@ -2365,7 +2365,7 @@ int FFFMPEGMediaTracks::AudioDecodeFrame(FTimespan& Time, FTimespan& Duration) {
     audioClockSerial = af->GetSerial();
 
     Time = FTimespan::FromSeconds(audioClock);
-    Duration = FTimespan::FromSeconds(af->GetDuration());
+    t_Duration = FTimespan::FromSeconds(af->GetDuration());
     
     return resampled_data_size;
 }
@@ -2377,9 +2377,9 @@ void FFFMPEGMediaTracks::RenderAudio() {
 
     audioCallbackTime = av_gettime_relative();
     FTimespan Time = 0;
-    FTimespan Duration = 0;
+    FTimespan t_Duration = 0;
 
-    audio_size = AudioDecodeFrame(Time, Duration);
+    audio_size = AudioDecodeFrame(Time, t_Duration);
     if (audio_size < 0) {
         /* if error, just output silence */
         audioBuf = NULL;
@@ -2397,7 +2397,7 @@ void FFFMPEGMediaTracks::RenderAudio() {
             FScopeLock Lock(&CriticalSection);
             const TSharedRef<FFFMPEGMediaAudioSample, ESPMode::ThreadSafe> AudioSample = AudioSamplePool->AcquireShared();
 
-            if (AudioSample->Initialize((uint8_t *)audioBuf, len1, targetAudio.NumChannels, targetAudio.SampleRate, Time, Duration))
+            if (AudioSample->Initialize((uint8_t *)audioBuf, len1, targetAudio.NumChannels, targetAudio.SampleRate, Time, t_Duration))
             {
                 AudioSampleQueue.Enqueue(AudioSample);
             }

@@ -11,10 +11,10 @@ public:
     void Init(FFMPEGPacketQueue* queue);
     void Init(FFMPEGClock* clock);
     double Get();
-    void Set (double pts, int serial);
-    void SetAt( double pts, int serial, double time);
-    void SetSpeed(double speed);
-    void SetPaused(bool paused);
+    void Set (double , int );
+    void SetAt( double , int , double );
+    void SetSpeed(double );
+    void SetPaused(bool );
     double GetPts();
     int GetSerial();
     double GetSpeed();
